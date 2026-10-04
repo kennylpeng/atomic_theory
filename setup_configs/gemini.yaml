@@ -1,0 +1,6 @@
+data:
+  embeddings_dir: /resources/gemini_embeddings_dir
+training:
+  resume_checkpoint: null
+logging:
+  wandb_entity: null
