@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atomic-features"
+version = "0.1.0"
+description = "Atomic features: scientific analysis and paper reproduction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+dependencies = ["numpy>=1.24,<3", "scipy==1.15.3", "matplotlib>=3.7,<4"]
+
+[project.optional-dependencies]
+paper = ["PyYAML>=6,<7", "pandas>=2,<3", "scikit-learn>=1.4,<2", "Pillow>=10", "networkx>=3", "tabulate>=0.9"]
+training = ["torch>=2.6", "tqdm>=4.66", "wandb>=0.17", "numba>=0.59", "PyYAML>=6,<7"]
+providers = ["datasets", "pyarrow", "google-genai", "transformers", "sentence-transformers", "wordfreq"]
+models = ["torch>=2.6"]
+dev = ["pytest>=7", "build", "wheel", "pyflakes"]
+
+[project.scripts]
+atomic-features = "atomic_features.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", ".", "tools", "scripts/hierarchy"]

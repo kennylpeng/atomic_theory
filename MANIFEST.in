@@ -1,0 +1,16 @@
+include LICENSE README.md REPRODUCTION.md DATA_TERMS.md
+include paper.py project_paths.py registry.json resources.example.json constraints.txt
+recursive-include assets *.png
+recursive-include src *.py
+recursive-include tools *.py
+recursive-include scripts *.py
+recursive-include experiments *.py *.json *.md
+recursive-include hierarchy_data_prep *.py *.txt
+recursive-include data_prep *.py
+recursive-include trainer *.py
+recursive-include setup_configs *.yaml
+recursive-include release *.json *.txt
+recursive-include tests *.py
+prune build
+prune dist
+global-exclude *.pyc

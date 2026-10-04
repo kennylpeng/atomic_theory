@@ -1,0 +1,5 @@
+# Numerical versions for paper verification. Plotting version may vary.
+# Validation used Python 3.12, NumPy 2.2.6, SciPy 1.15.3, Matplotlib 3.11.2.
+numpy==2.2.6
+scipy==1.15.3
+matplotlib>=3.10,<4

@@ -1,0 +1,20 @@
+{
+  "scope": "Fonts used only for validation; binaries are not distributed.",
+  "fonts": [
+    {
+      "file": "NotoSansBengali-Regular.ttf",
+      "source": "https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansBengali/NotoSansBengali-Regular.ttf",
+      "sha256": "6300c5370cd688b0641343de4c786de6d412bb6c578d129dae75e93a0322dcab"
+    },
+    {
+      "file": "NotoSansCJKsc-Regular.otf",
+      "source": "https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+      "sha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b"
+    },
+    {
+      "file": "NotoSansThai-Regular.ttf",
+      "source": "https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansThai/NotoSansThai-Regular.ttf",
+      "sha256": "404ddfb5ed0aaa6b6ec8a85700d682978992062d67da93903967b56cbd9a4acc"
+    }
+  ]
+}

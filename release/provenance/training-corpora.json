@@ -1,0 +1,104 @@
+{
+  "gemini": {
+    "counts": {
+      "emotion": 19930,
+      "fever": 11079420,
+      "gooaq": 6024992,
+      "hotpotqa": 10564510,
+      "msmarco": 9351785,
+      "natural-questions": 200462,
+      "nfcorpus": 10503,
+      "paq_10m": 20000000,
+      "scifact": 11475,
+      "squad": 175198,
+      "trivia-qa": 146692,
+      "WebInstructSub": 4670440,
+      "miracl-corpus-text": 7978232,
+      "miracl-corpus-title": 19593919
+    },
+    "shards": 929,
+    "settings": {
+      "dim": [
+        "3072"
+      ],
+      "dtype": [
+        "float16"
+      ],
+      "model_id": [
+        "gemini-embedding-2-preview"
+      ],
+      "task_type": [
+        "RETRIEVAL_DOCUMENT"
+      ]
+    },
+    "miracl_text_languages": {
+      "ar": 500000,
+      "bn": 297265,
+      "de": 500000,
+      "en": 500000,
+      "es": 500000,
+      "fa": 500000,
+      "fi": 500000,
+      "fr": 500000,
+      "hi": 500000,
+      "id": 500000,
+      "ja": 500000,
+      "ko": 500000,
+      "ru": 500000,
+      "sw": 131924,
+      "te": 500000,
+      "th": 500000,
+      "yo": 49043,
+      "zh": 500000
+    }
+  },
+  "nemotron": {
+    "counts": {
+      "emotion": 19930,
+      "fever": 11079420,
+      "gooaq": 6024992,
+      "hotpotqa": 10564510,
+      "msmarco": 9351785,
+      "natural-questions": 200462,
+      "nfcorpus": 10503,
+      "paq_10m": 20000000,
+      "scifact": 11475,
+      "squad": 175198,
+      "trivia-qa": 146692,
+      "WebInstructSub": 4670440,
+      "miracl-corpus-text": 7378232,
+      "miracl-corpus-title": 19593919
+    },
+    "shards": 923,
+    "settings": {
+      "dim": [
+        "4096"
+      ],
+      "dtype": [
+        "float16"
+      ],
+      "normalize_embeddings": [
+        "False"
+      ]
+    },
+    "miracl_text_languages": {
+      "ar": 500000,
+      "bn": 297265,
+      "de": 500000,
+      "en": 500000,
+      "es": 500000,
+      "fa": 500000,
+      "fi": 500000,
+      "fr": 500000,
+      "hi": 500000,
+      "id": 500000,
+      "yo": 49043,
+      "ko": 500000,
+      "te": 400000,
+      "zh": 500000,
+      "ja": 500000,
+      "ru": 500000,
+      "sw": 131924
+    }
+  }
+}

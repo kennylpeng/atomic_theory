@@ -1,0 +1,95 @@
+{
+  "scope": "Checkpoint identity metadata only; model files are external.",
+  "checkpoints": [
+    {
+      "family": "gemini",
+      "control": "fixed-k",
+      "width": 512,
+      "k": 128,
+      "seed": 1138983768,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "4c98c49a1e44c04d436dd600f09e3d25442d4af09f4d87417edfa5e302890a19"
+    },
+    {
+      "family": "gemini",
+      "control": "fixed-k",
+      "width": 4096,
+      "k": 128,
+      "seed": 296799549,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "c6a751b53f5406ecd4ca869446ae3719b515de33e3bee6d727445841494127e4"
+    },
+    {
+      "family": "gemini",
+      "control": "fixed-k",
+      "width": 32768,
+      "k": 128,
+      "seed": 1480725346,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "38a2ec9f6a5d43b909c7be92af37761d5953f731246dab0de2aa90f44fa3bec5"
+    },
+    {
+      "family": "nemotron",
+      "control": "fixed-k",
+      "width": 512,
+      "k": 128,
+      "seed": 1588734130,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "aa0dbb3542084dd2fc1ebb53c9d26c7069593f5b1baf2f3187766281918e1ed3"
+    },
+    {
+      "family": "nemotron",
+      "control": "fixed-k",
+      "width": 4096,
+      "k": 128,
+      "seed": 578010941,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "e1872d71054e284cf71eb7268b6f9938d7ca1b57b0b45e989d9c5886e2dc4438"
+    },
+    {
+      "family": "nemotron",
+      "control": "fixed-k",
+      "width": 32768,
+      "k": 128,
+      "seed": 1923885051,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "95076e30e85036e1792f9e1fff7e864c5ee76c9e88fce533551ff62b7e3eaaa9"
+    },
+    {
+      "family": "gemini",
+      "control": "alternate seed",
+      "width": 512,
+      "k": 32,
+      "seed": 1226913470,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "eed6762b7a07580cdf61458619ba62d7f79dc0de41dc0c50c8869be5645ffadf"
+    },
+    {
+      "family": "gemini",
+      "control": "alternate seed",
+      "width": 4096,
+      "k": 32,
+      "seed": 1847620082,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "804764c4a7f16317cdff8e9e0b949132eb925837230222215716f396889ffca2"
+    },
+    {
+      "family": "gemini",
+      "control": "alternate seed",
+      "width": 32768,
+      "k": 64,
+      "seed": 885798999,
+      "steps": 1000000,
+      "auxiliary_coefficient": 0.25,
+      "checkpoint_sha256": "388cdaab2e06527a851cffa12051a47e8fab1be1eb9974987d97334e994c09f6"
+    }
+  ]
+}

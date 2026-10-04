@@ -1,0 +1,3140 @@
+{
+  "schema_version": 1,
+  "workflows": [
+    {
+      "id": "main-numbers",
+      "description": "Figure 2: match graphs, witnesses and aggregate hierarchy F1",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "-m",
+          "atomic_features.cli",
+          "reproduce",
+          "${results_bundle}",
+          "--output",
+          "${work}/reproduced"
+        ]
+      ],
+      "requires": [
+        "${results_bundle}/manifest.json"
+      ],
+      "outputs": [
+        "reproduced/report.json"
+      ],
+      "notes": "",
+      "family": "validation"
+    },
+    {
+      "id": "main-candidates",
+      "description": "Figure 2 plus rebuilding 72 retained Pearson graphs",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "-m",
+          "atomic_features.cli",
+          "reproduce",
+          "${results_bundle}",
+          "--candidates",
+          "${candidates_bundle}",
+          "--output",
+          "${work}/reproduced_candidates"
+        ]
+      ],
+      "requires": [
+        "${results_bundle}/manifest.json",
+        "${candidates_bundle}/manifest.json"
+      ],
+      "outputs": [
+        "reproduced_candidates/report.json"
+      ],
+      "notes": "",
+      "family": "validation"
+    },
+    {
+      "id": "persistence",
+      "description": "Direction and activation persistence (P1)",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/stability/paper_pairwise_persistence.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/persistent_stability_signed_0.7",
+        "${work}/full_experiments/results/persistent_stability_pearson_0.7",
+        "${work}/full_experiments/results/nemotron_persistent_stability_pearson_0.7"
+      ],
+      "outputs": [
+        "full_experiments/results/persistent_stability_pairwise_0.7/persistent_stability_cosine.pdf",
+        "full_experiments/results/persistent_stability_pairwise_0.7/persistent_stability_pearson.pdf"
+      ],
+      "notes": "",
+      "family": "persistence"
+    },
+    {
+      "id": "exclusive-persistence",
+      "description": "Exclusive persistence across all larger widths (Figure 6)",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/stability/paper_stability_appendix.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/matches/t1_0.7_t2_0.7"
+      ],
+      "outputs": [
+        "full_experiments/results/stability_appendix_0.7/strict_all_larger.pdf"
+      ],
+      "notes": "",
+      "family": "persistence"
+    },
+    {
+      "id": "split-directions",
+      "description": "Maximum and exclusive SAE/PCA heatmaps",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/stability/paper_sae_pca_split_heatmaps.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/split_matches/signed_maximum_cardinality_pca_absolute_0.7",
+        "${work}/full_experiments/results/split_matches/exclusive_pca_absolute_0.7/matches"
+      ],
+      "outputs": [
+        "full_experiments/results/split_matches/paper_sae_pca_0.7/maximum_cardinality_proportions.pdf",
+        "full_experiments/results/split_matches/paper_sae_pca_0.7/exclusive_proportions.pdf"
+      ],
+      "notes": "",
+      "family": "splits"
+    },
+    {
+      "id": "split-activations",
+      "description": "Distribution-specific Pearson heatmaps",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/stability/plot_split_activation_heatmaps.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/split_sae_activation_sketch512_candidates32_top5"
+      ],
+      "outputs": [
+        "full_experiments/results/split_sae_activation_sketch512_candidates32_top5/activation_split_heatmaps_t0.7.pdf"
+      ],
+      "notes": "",
+      "family": "splits"
+    },
+    {
+      "id": "thresholds",
+      "description": "Cosine and Pearson threshold sensitivity",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/stability/paper_persistent_threshold_sweep.py",
+          "package"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/persistent_stability_threshold_sweep"
+      ],
+      "outputs": [
+        "full_experiments/results/persistent_stability_threshold_sweep/figure_2a_cosine_thresholds.pdf",
+        "full_experiments/results/persistent_stability_threshold_sweep/activation_pearson_thresholds.pdf"
+      ],
+      "notes": "",
+      "family": "persistence"
+    },
+    {
+      "id": "cross-model",
+      "description": "Same-width cross-model threshold sweep",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/stability/paper_cross_model_cardinality.py",
+          "--thresholds",
+          "0.5",
+          "0.6",
+          "0.7",
+          "0.8",
+          "--output",
+          "${work}/full_experiments/results/cross_model_same_width_cardinality_pearson_0.7"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/gemini_nemotron_all_widths_sketch512_candidates32_top5"
+      ],
+      "outputs": [
+        "full_experiments/results/cross_model_same_width_cardinality_pearson_0.7/same_width_matching.pdf",
+        "full_experiments/results/cross_model_same_width_cardinality_pearson_0.7/threshold_sweep_counts.csv"
+      ],
+      "notes": "Render the threshold sweep at the exact asset path used by the manuscript.",
+      "family": "cross-model"
+    },
+    {
+      "id": "hierarchy-original",
+      "description": "Mean held-out F1: original",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_hierarchy_mean_f1_lines.py",
+          "--variant",
+          "original"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/probe_results"
+      ],
+      "outputs": [
+        "full_experiments/plots/hierarchy_mean_f1_lines/hierarchy_mean_f1_original.pdf"
+      ],
+      "notes": "",
+      "family": "hierarchy"
+    },
+    {
+      "id": "hierarchy-k128",
+      "description": "Mean held-out F1: k128",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_hierarchy_mean_f1_lines.py",
+          "--variant",
+          "k128"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/probe_results"
+      ],
+      "outputs": [
+        "full_experiments/plots/hierarchy_mean_f1_lines/hierarchy_mean_f1_k128.pdf"
+      ],
+      "notes": "",
+      "family": "hierarchy"
+    },
+    {
+      "id": "prefix-recall",
+      "description": "Recompute full-collection a-detector recall",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/compute_wordfreq_a_probe_prefix_recall.py",
+          "--model",
+          "gemini"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/wordfreq",
+        "${hierarchy_data_dir}/probe_results"
+      ],
+      "outputs": [
+        "full_experiments/plots/wordfreq_a_probe_prefix_recall_heatmap_gemini.csv"
+      ],
+      "notes": "",
+      "family": "prefixes"
+    },
+    {
+      "id": "prefix-example",
+      "description": "Main prefix F1/recall panels",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_wordfreq_a_prefix_figures.py"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/probe_results/all_summaries.tsv"
+      ],
+      "outputs": [
+        "full_experiments/plots/wordfreq_a_prefix_gemini_test_f1_by_width.pdf",
+        "full_experiments/plots/wordfreq_a_probe_prefix_recall_heatmap_gemini.pdf"
+      ],
+      "notes": "",
+      "family": "prefixes"
+    },
+    {
+      "id": "prefix-grid",
+      "description": "All eligible original-schedule letter panels",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_gemini_prefix_f1_grid.py"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/probe_results/all_summaries.tsv"
+      ],
+      "outputs": [
+        "full_experiments/plots/gemini_letter_prefix_f1/gemini_prefix_f1_a_to_z_excluding_x_grid.pdf"
+      ],
+      "notes": "",
+      "family": "prefixes"
+    },
+    {
+      "id": "prefix-grid-k128",
+      "description": "Fixed-k letter panels",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_gemini_prefix_f1_grid.py",
+          "--summary",
+          "${work}/full_experiments/results/prefix_recovery_k128/all_summaries.tsv",
+          "--output-dir",
+          "${work}/full_experiments/plots/gemini_letter_prefix_f1_k128",
+          "--widths",
+          "512",
+          "4096",
+          "32768",
+          "65536",
+          "131072",
+          "--top-k",
+          "128"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/prefix_recovery_k128/all_summaries.tsv"
+      ],
+      "outputs": [
+        "full_experiments/plots/gemini_letter_prefix_f1_k128/gemini_prefix_f1_a_to_z_excluding_x_grid.pdf"
+      ],
+      "notes": "",
+      "family": "prefixes"
+    },
+    {
+      "id": "individual-recovery",
+      "description": "Held-out F1 > 0.6 recovery",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_individual_category_recovery.py",
+          "--f1-cutoff",
+          "0.6",
+          "--comparison",
+          "gt"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/probe_results",
+        "${gbif_metadata_dir}"
+      ],
+      "outputs": [
+        "full_experiments/plots/individual_category_recovery_f1_gt_0p6_separate_prompts/individual_category_recovery_proportions_appendix.pdf"
+      ],
+      "notes": "",
+      "family": "hierarchy"
+    },
+    {
+      "id": "parent-child-recovery",
+      "description": "Held-out F1 > 0.6 recovery",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_parent_child_pair_recovery.py",
+          "--f1-cutoff",
+          "0.6",
+          "--strict",
+          "--output-dir",
+          "${work}/full_experiments/plots/parent_child_pair_recovery_f1_gt_0p6_separate_prompts"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}/probe_results",
+        "${gbif_metadata_dir}"
+      ],
+      "outputs": [
+        "full_experiments/plots/parent_child_pair_recovery_f1_gt_0p6_separate_prompts/parent_child_pair_recovery_proportions_appendix.pdf"
+      ],
+      "notes": "",
+      "family": "hierarchy"
+    },
+    {
+      "id": "prevalence",
+      "description": "SAE versus 100-iteration KMeans prevalence",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/plot_sae_kmeans_prevalence.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/main_sae_activation_statistics_zero_median",
+        "${work}/full_experiments/results/kmeans_raw_full_corpus_iter100",
+        "${work}/full_experiments/results/kmeans_512_full_corpus_iter100",
+        "${work}/full_experiments/results/kmeans_raw_full_corpus_iter20/gemini/plan.json",
+        "${work}/full_experiments/results/kmeans_raw_full_corpus_iter20/nemotron/plan.json",
+        "${work}/full_experiments/results/kmeans_512_full_corpus_iter100/gemini_k512_prevalence.npz",
+        "${work}/full_experiments/results/kmeans_512_full_corpus_iter100/nemotron_k512_prevalence.npz"
+      ],
+      "outputs": [
+        "full_experiments/plots/sae_kmeans_prevalence_iter100/sae_kmeans_prevalence.pdf"
+      ],
+      "notes": "",
+      "family": "prevalence"
+    },
+    {
+      "id": "prevalence-k128",
+      "description": "Fixed-k SAE versus KMeans prevalence",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/plot_fixed_k128_sae_kmeans_prevalence.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/fixed_k128_sae_prevalence",
+        "${work}/full_experiments/results/kmeans_512_full_corpus_iter100",
+        "${work}/full_experiments/results/kmeans_raw_full_corpus_iter20/gemini/plan.json",
+        "${work}/full_experiments/results/kmeans_raw_full_corpus_iter20/nemotron/plan.json",
+        "${work}/full_experiments/results/kmeans_512_full_corpus_iter100/gemini_k512_prevalence.npz",
+        "${work}/full_experiments/results/kmeans_512_full_corpus_iter100/nemotron_k512_prevalence.npz"
+      ],
+      "outputs": [
+        "full_experiments/plots/sae_kmeans_prevalence_fixed_k128_iter100/sae_kmeans_prevalence_fixed_k128.pdf"
+      ],
+      "notes": "",
+      "family": "prevalence"
+    },
+    {
+      "id": "prevalence-association",
+      "description": "Prevalence AUCs and binned matching plots",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/review_controls/median_report.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/sparsity_seed_controls/prevalence_median"
+      ],
+      "outputs": [
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/width_effects.csv",
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/cross_distribution_effects.csv",
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/COMPLETE.json"
+      ],
+      "notes": "",
+      "family": "prevalence"
+    },
+    {
+      "id": "prevalence-panels",
+      "description": "Width and cross-distribution prevalence panels",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/review_controls/plot_median_paper.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/sparsity_seed_controls/prevalence_median"
+      ],
+      "outputs": [
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/paper/width_prevalence_median.pdf",
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/paper/cross_distribution_prevalence_median.pdf"
+      ],
+      "notes": "",
+      "family": "prevalence"
+    },
+    {
+      "id": "fixed-source-table",
+      "description": "Fixed-sparsity source swaps",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/review_controls/report_fixed_source_swap.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/sparsity_seed_controls/fixed_source_swap",
+        "${work}/full_experiments/results/sparsity_seed_controls/gemini/results.json",
+        "${work}/full_experiments/results/sparsity_seed_controls/nemotron/results.json"
+      ],
+      "outputs": [
+        "full_experiments/results/sparsity_seed_controls/fixed_source_swap/table.tex"
+      ],
+      "notes": "",
+      "family": "controls"
+    },
+    {
+      "id": "fixed-source-gemini",
+      "description": "Recompute fixed-source matching gemini",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/review_controls/fixed_source_swap.py",
+          "--family",
+          "gemini"
+        ]
+      ],
+      "requires": [
+        "${models_dir}",
+        "${control_models_dir}"
+      ],
+      "outputs": [],
+      "notes": "",
+      "family": "controls"
+    },
+    {
+      "id": "seed-gemini",
+      "description": "Direction control and alternate seed gemini",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/review_controls/directions.py",
+          "--family",
+          "gemini",
+          "--seeds-only"
+        ]
+      ],
+      "requires": [
+        "${models_dir}",
+        "${control_models_dir}"
+      ],
+      "outputs": [],
+      "notes": "",
+      "family": "controls"
+    },
+    {
+      "id": "fixed-source-nemotron",
+      "description": "Recompute fixed-source matching nemotron",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/review_controls/fixed_source_swap.py",
+          "--family",
+          "nemotron"
+        ]
+      ],
+      "requires": [
+        "${models_dir}",
+        "${control_models_dir}"
+      ],
+      "outputs": [],
+      "notes": "",
+      "family": "controls"
+    },
+    {
+      "id": "compact-hierarchies",
+      "description": "Food/Music selected hierarchy table",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/export_compact_food_music_table.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/gemini_131k_hierarchical_families"
+      ],
+      "outputs": [
+        "full_experiments/results/gemini_131k_hierarchical_families/compact_main_text/food_music_hierarchies_table.tex"
+      ],
+      "notes": "",
+      "family": "containment"
+    },
+    {
+      "id": "food-hierarchy",
+      "description": "Selected food containment graph",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/containment/plot_food_illustration.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/gemini_131k_hierarchical_families",
+        "${parent_child_dir}/gemini_m131072_k128_gt_0p05_rlower_0p7/immediate_parent_child_pairs.csv"
+      ],
+      "outputs": [
+        "full_experiments/results/gemini_131k_hierarchical_families/food_hierarchy_illustration.png"
+      ],
+      "notes": "",
+      "family": "containment"
+    },
+    {
+      "id": "music-hierarchy",
+      "description": "Selected music containment graph",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/containment/plot_music_medium.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/gemini_131k_hierarchical_families",
+        "${parent_child_dir}/gemini_m131072_k128_gt_0p05_rlower_0p7/immediate_parent_child_pairs.csv"
+      ],
+      "outputs": [
+        "full_experiments/results/gemini_131k_hierarchical_families/music_hierarchy_medium.png"
+      ],
+      "notes": "",
+      "family": "containment"
+    },
+    {
+      "id": "hierarchy-examples",
+      "description": "Food and Music activating example tables",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/containment/make_dropin.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/gemini_131k_hierarchical_families/latex_examples"
+      ],
+      "outputs": [
+        "full_experiments/results/gemini_131k_hierarchical_families/latex_dropin/food_table.tex",
+        "full_experiments/results/gemini_131k_hierarchical_families/latex_dropin/music_table.tex"
+      ],
+      "notes": "",
+      "family": "containment"
+    },
+    {
+      "id": "synthetic-design",
+      "description": "468 trajectories and separate small pilot",
+      "stage": "prepare",
+      "commands": [
+        [
+          "${python}",
+          "experiments/recovery_principle/scaling/billion/code/make_configs.py"
+        ]
+      ],
+      "requires": [],
+      "outputs": [
+        "experiments/recovery_principle/scaling/billion/configs/sweep.json"
+      ],
+      "notes": "",
+      "family": "synthetic"
+    },
+    {
+      "id": "synthetic-recovery",
+      "description": "Reaggregate final-budget prefix recovery",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "experiments/recovery_principle/scaling/billion/code/plot_width.py"
+        ]
+      ],
+      "requires": [
+        "${work}/experiments/recovery_principle/scaling/billion/results/checkpoints.csv"
+      ],
+      "outputs": [
+        "experiments/recovery_principle/scaling/billion/plots/width_prefix_alpha_sweep_1024M_proportion.pdf",
+        "experiments/recovery_principle/scaling/billion/plots/width_prefix_k_sweep_1024M_proportion.pdf"
+      ],
+      "notes": "",
+      "family": "synthetic"
+    },
+    {
+      "id": "synthetic-persistence",
+      "description": "Revalidate t=0.8 graphs and plot persistence",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "experiments/recovery_principle/scaling/billion/code/persistence_threshold.py",
+          "report",
+          "--threshold",
+          "0.8"
+        ]
+      ],
+      "requires": [
+        "${work}/experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8",
+        "${work}/experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.7"
+      ],
+      "outputs": [
+        "experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8/plots/persistence_alpha_proportion_1024M.pdf",
+        "experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8/plots/persistence_k_proportion_1024M.pdf"
+      ],
+      "notes": "",
+      "family": "synthetic"
+    },
+    {
+      "id": "dates",
+      "description": "Date manifold from saved ordered projections",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "experiments/day_of_year/plot_gemini_dates_summary.py"
+        ]
+      ],
+      "requires": [
+        "${work}/experiments/day_of_year/results/gemini_date_embeddings_pca",
+        "${work}/experiments/day_of_year/results/gemini_smaller_dictionaries/m131072"
+      ],
+      "outputs": [
+        "experiments/day_of_year/results/gemini_dates_summary.png"
+      ],
+      "notes": "",
+      "family": "manifolds"
+    },
+    {
+      "id": "colors",
+      "description": "Refit both PCAs on the same 374 selected color rows",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "experiments/colors/plot_gemini_colors_summary.py"
+        ]
+      ],
+      "requires": [
+        "${work}/experiments/colors/data/gemini_embeddings",
+        "${work}/experiments/colors/results/color_names_hex_gemini_d131072_selected_ranks_thr0p05_swatches",
+        "${work}/experiments/colors/results/color_names_hex_gemini_d131072_selected_ranks_thr0p05_pca"
+      ],
+      "outputs": [
+        "experiments/colors/results/gemini_colors_summary.png"
+      ],
+      "notes": "",
+      "family": "manifolds"
+    },
+    {
+      "id": "color-examples",
+      "description": "Generate color text/artwork table from frozen selections",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "experiments/colors/render_color_examples_table.py",
+          "--sources",
+          "${work}/experiments/colors/results/gemini_color_feature_examples_table/sources.json",
+          "--output",
+          "${work}/experiments/colors/results/gemini_color_feature_examples_table/table.tex"
+        ]
+      ],
+      "requires": [
+        "${work}/experiments/colors/results/gemini_color_feature_examples_table/sources.json"
+      ],
+      "outputs": [
+        "experiments/colors/results/gemini_color_feature_examples_table/table.tex"
+      ],
+      "notes": "",
+      "family": "manifolds"
+    },
+    {
+      "id": "prefix-molecules",
+      "description": "Unconstrained prefix decoder fits and held-out recalls",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/run_all_a_prefix_linear_reconstruction.py",
+          "--basis-direction",
+          "decoder",
+          "--probe-results-dir",
+          "${hierarchy_data_dir}/probe_results/prefix_molecule_selection",
+          "--out-dir",
+          "${work}/full_experiments/results/a_prefix_linear_reconstruction/gemini_all_prefixes_decoder_basis"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/plot_a_prefix_empirical_molecule_table.py"
+        ]
+      ],
+      "requires": [
+        "${models_dir}",
+        "${hierarchy_data_dir}"
+      ],
+      "outputs": [
+        "full_experiments/plots/a_prefix_empirical_molecule_table.tex"
+      ],
+      "notes": "",
+      "family": "molecules"
+    },
+    {
+      "id": "prefix-cosines-compute",
+      "description": "Compute checkpoint cosines for selected prefix probes",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/compute_a_prefix_probe_decoder_cosines.py",
+          "--probe-results-dir",
+          "${hierarchy_data_dir}/probe_results/prefix_molecule_selection"
+        ]
+      ],
+      "requires": [
+        "${models_dir}",
+        "${hierarchy_data_dir}/probe_results"
+      ],
+      "outputs": [
+        "full_experiments/results/a_prefix_probe_decoder_cosines/summary.json"
+      ],
+      "notes": "",
+      "family": "molecules"
+    },
+    {
+      "id": "prefix-cosines",
+      "description": "Validate and render signed decoder cosine matrices",
+      "stage": "recompute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/plot_a_prefix_probe_decoder_cosines.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/a_prefix_probe_decoder_cosines"
+      ],
+      "outputs": [
+        "full_experiments/plots/a_prefix_probe_decoder_cosines.pdf"
+      ],
+      "notes": "",
+      "family": "molecules"
+    },
+    {
+      "id": "transform-examples",
+      "description": "Curated feature-3290 activation tables",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/build_target_3290_transform_mix_small_table.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/top_feature_examples/gemini_target_3290_expanded_17atom_sse_0p05",
+        "${activation_cache_dir}"
+      ],
+      "outputs": [
+        "full_experiments/plots/target_3290_transform_mix_selected_12.tex",
+        "full_experiments/results/top_feature_examples/gemini_target_3290_expanded_17atom_sse_0p05/target_3290_transform_mix_selected_12.csv"
+      ],
+      "notes": "",
+      "family": "molecules"
+    },
+    {
+      "id": "transform-fit",
+      "description": "Recompute first OMP support meeting squared error <= 0.05",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/reproduce_target_3290.py",
+          "--output",
+          "${work}/target_3290_fit.json"
+        ]
+      ],
+      "requires": [
+        "${models_dir}/gemini_m4096_k32",
+        "${models_dir}/gemini_m131072_k128"
+      ],
+      "outputs": [
+        "target_3290_fit.json"
+      ],
+      "notes": "CPU default; pass --device cuda directly to the script if desired.",
+      "family": "molecules"
+    },
+    {
+      "id": "semantic-examples",
+      "description": "Cross-model selected-pair example tables",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/build_pearson_appendix_tables.py"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/plots/platonic_features_131k_pearson/main_examples/selection_and_examples.json",
+        "${work}/full_experiments/plots/platonic_features_131k_pearson/diverse_appendix_examples/selection_and_examples.json",
+        "${datasets_dir}"
+      ],
+      "outputs": [
+        "full_experiments/plots/platonic_features_131k_pearson/appendix_examples_15/tables.tex"
+      ],
+      "notes": "",
+      "family": "cross-model"
+    },
+    {
+      "id": "hierarchy-probes",
+      "description": "Refit all 72 original-schedule hierarchy probe runs",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "gemini",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "wordfreq",
+          "--model",
+          "nemotron",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_country_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "gemini",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "geonames_continent_questions",
+          "--model",
+          "nemotron",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "gemini",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "512",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "1024",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "2048",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "4096",
+          "--top-k",
+          "32"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "8192",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "16384",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "32768",
+          "--top-k",
+          "64"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "65536",
+          "--top-k",
+          "128"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_activation_probes.py",
+          "--dataset",
+          "gbif",
+          "--model",
+          "nemotron",
+          "--width",
+          "131072",
+          "--top-k",
+          "128"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}",
+        "${gbif_metadata_dir}"
+      ],
+      "outputs": [],
+      "notes": "Requires the original sparse caches; regenerate with hierarchy_data_prep/02_compute_sparse_activations.py first.",
+      "family": "hierarchy"
+    },
+    {
+      "id": "fixed-k-probes",
+      "description": "Six Prefix and eighteen Cities/GBIF fixed-k probes",
+      "stage": "compute",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/run_prefix_recovery_k128.py",
+          "--task",
+          "0"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_prefix_recovery_k128.py",
+          "--task",
+          "1"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_prefix_recovery_k128.py",
+          "--task",
+          "2"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_prefix_recovery_k128.py",
+          "--task",
+          "3"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_prefix_recovery_k128.py",
+          "--task",
+          "4"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_prefix_recovery_k128.py",
+          "--task",
+          "5"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "0"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "1"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "2"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "3"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "4"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "5"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "6"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "7"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "8"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "9"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "10"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "11"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "12"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "13"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "14"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "15"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "16"
+        ],
+        [
+          "${python}",
+          "scripts/hierarchy/run_hierarchy_recovery_k128.py",
+          "--task",
+          "17"
+        ]
+      ],
+      "requires": [
+        "${hierarchy_data_dir}",
+        "${control_models_dir}",
+        "${gbif_metadata_dir}"
+      ],
+      "outputs": [],
+      "notes": "",
+      "family": "hierarchy"
+    },
+    {
+      "id": "synthetic-train",
+      "description": "Train all 468 trajectories to 1,024M examples",
+      "stage": "train",
+      "commands": [
+        [
+          "${python}",
+          "experiments/recovery_principle/scaling/billion/code/run.py",
+          "--manifest",
+          "${work}/experiments/recovery_principle/scaling/billion/configs/sweep.json",
+          "--index",
+          "${index}",
+          "--device",
+          "cuda"
+        ]
+      ],
+      "requires": [
+        "${work}/experiments/recovery_principle/scaling/billion/configs/sweep.json"
+      ],
+      "outputs": [],
+      "notes": "Large GPU workload: 479,232,000,000 presentations. Select individual indices with the original run.py when scheduling parallel jobs. No scheduler is required.",
+      "family": "synthetic",
+      "matrix": {
+        "index": {
+          "range": [
+            0,
+            468
+          ]
+        }
+      }
+    },
+    {
+      "id": "semantic-render",
+      "description": "Render frozen 15-text-per-side selections",
+      "stage": "render",
+      "commands": [
+        [
+          "${python}",
+          "scripts/build_pearson_appendix_tables.py",
+          "--render-only"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/plots/platonic_features_131k_pearson/main_examples/selection_and_examples.json",
+        "${work}/full_experiments/plots/platonic_features_131k_pearson/diverse_appendix_examples/selection_and_examples.json",
+        "${work}/full_experiments/plots/platonic_features_131k_pearson/appendix_examples_15/selection_and_examples.json"
+      ],
+      "outputs": [
+        "full_experiments/plots/platonic_features_131k_pearson/appendix_examples_15/tables.tex"
+      ],
+      "notes": "",
+      "family": "cross-model"
+    },
+    {
+      "id": "aggregate-probes",
+      "family": "hierarchy",
+      "stage": "analysis",
+      "description": "Aggregate per-run probe summaries without diagnostic plots",
+      "commands": [
+        [
+          "${python}",
+          "scripts/hierarchy/aggregate_hierarchy_probes.py"
+        ]
+      ],
+      "requires": [],
+      "outputs": [],
+      "notes": "See program options and reproduction guide for external input requirements."
+    },
+    {
+      "id": "paper-numbers",
+      "family": "validation",
+      "stage": "analysis",
+      "description": "Check saved paper numbers",
+      "commands": [
+        [
+          "${python}",
+          "tools/check_paper_numbers.py",
+          "--root",
+          "${work}",
+          "--output",
+          "${work}/number-checks.json"
+        ]
+      ],
+      "requires": [
+        "${work}/full_experiments/results/persistent_stability_pairwise_0.7/counts.csv",
+        "${work}/full_experiments/results/split_matches/paper_sae_pca_0.7/maximum_cardinality_counts.csv",
+        "${work}/full_experiments/results/split_matches/paper_sae_pca_0.7/exclusive_counts.csv",
+        "${work}/full_experiments/results/split_sae_activation_sketch512_candidates32_top5/counts.csv",
+        "${work}/full_experiments/results/sparsity_seed_controls/prevalence_median/width_effects.csv",
+        "${work}/full_experiments/results/sparsity_seed_controls/prevalence_median/cross_distribution_effects.csv",
+        "${work}/full_experiments/results/a_prefix_probe_decoder_cosines/summary.json",
+        "${work}/full_experiments/results/top_feature_examples/gemini_target_3290_expanded_17atom_sse_0p05/family_spec.json",
+        "${work}/experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8/counts.csv",
+        "${work}/experiments/recovery_principle/scaling/billion/results/checkpoints.csv"
+      ],
+      "outputs": [
+        "number-checks.json"
+      ],
+      "notes": "Checks saved numerical results without manuscript sources or generated TeX tables."
+    },
+    {
+      "id": "model-configs",
+      "family": "prepare-train",
+      "stage": "prepare",
+      "description": "Generate training configurations",
+      "commands": [
+        [
+          "${python}",
+          "scripts/generate_model_configs.py",
+          "--include-controls"
+        ]
+      ],
+      "requires": [],
+      "outputs": [],
+      "notes": "See program options and reproduction guide for external input requirements."
+    }
+  ],
+  "resource_roots": {
+    "/resources/workspace": "workspace",
+    "/resources/hierarchy_data_dir": "hierarchy_data_dir",
+    "/resources/activation_cache_dir": "activation_cache_dir",
+    "/resources/parent_child_dir": "parent_child_dir",
+    "/resources/research_data_dir": "research_data_dir",
+    "/resources/models_dir": "models_dir",
+    "/resources/date_reference_models_dir": "date_reference_models_dir",
+    "/resources/gemini_embeddings_dir": "gemini_embeddings_dir",
+    "/resources/nemotron_embeddings_dir": "nemotron_embeddings_dir",
+    "/resources/datasets_dir": "datasets_dir",
+    "/resources/baselines_dir": "baselines_dir",
+    "/resources/gemini_artifacts_dir": "gemini_artifacts_dir",
+    "/resources/wikiart_dir": "wikiart_dir",
+    "/resources/gbif_metadata_dir": "gbif_metadata_dir",
+    "/resources/control_models_dir": "control_models_dir",
+    "/resources/scratch_dir": "scratch_dir",
+    "/resources/synthetic_runs_dir": "synthetic_runs_dir"
+  },
+  "analyses": [
+    {
+      "id": "persistence",
+      "title": "Persistent features across SAE widths",
+      "paper": [
+        "Figure 2a",
+        "Figure 7"
+      ],
+      "assets": [
+        "FigPersistentStability",
+        "FigPersistentStabilityPearson"
+      ],
+      "code": [
+        "src/atomic_features/reproduce.py",
+        "src/atomic_features/matching.py",
+        "src/atomic_features/plotting.py",
+        "scripts/stability/paper_signed_cosine_figures.py",
+        "scripts/stability/paper_pearson_persistent_stability.py",
+        "scripts/match_gemini_width_sketch.py",
+        "scripts/match_nemotron_width_sketch.py",
+        "scripts/stability/paper_pairwise_persistence.py"
+      ],
+      "inputs": [
+        "results/persistence/{gemini,nemotron}/{decoder_cosine,activation_pearson}/: graphs and witnesses",
+        "results/reference/persistence.json: paper values",
+        "candidates/{gemini,nemotron}/*_top5.npz: optional bidirectional retained neighbors",
+        "Upstream: 18 full-corpus SAEs; original embeddings/activation caches for candidate discovery"
+      ],
+      "method": "Independently solve maximum-cardinality matching on each full-source graph, then intersect matched source IDs across all larger widths. Signed cosine or Pearson >=0.7. Use ascending feature IDs, sorted CSR and SciPy 1.15.3 for deterministic tie-breaking. Decoder graphs are exhaustive; Pearson persistence is exact for this rule on retained graphs, with no lower-bound guarantee relative to exhaustive independent intersections. Check all 32 counts and selected IDs; optionally reconstruct 72 Pearson graphs.",
+      "command": "python paper.py plan persistence --config /path/to/resources.json\npython paper.py run persistence --config /path/to/resources.json",
+      "gap": "Full streaming candidate discovery requires corpus activation caches.",
+      "workflow": "persistence"
+    },
+    {
+      "id": "split-decoder",
+      "title": "Cross-distribution decoder matching",
+      "paper": [
+        "Figure 2b"
+      ],
+      "assets": [
+        "FigSplitMatches"
+      ],
+      "code": [
+        "src/atomic_features/reproduce.py",
+        "src/atomic_features/matching.py",
+        "scripts/stability/paper_signed_cosine_figures.py",
+        "scripts/stability/split_16384_match_heatmaps.py",
+        "scripts/stability/paper_absolute_split_heatmap.py"
+      ],
+      "inputs": [
+        "results/splits/*/{graph,assignment}.npz",
+        "results/reference/splits.csv",
+        "Upstream: full/wiki/no-wiki/random1/random2 SAEs, KMeans centroids, and PCA components"
+      ],
+      "method": "Solve maximum-cardinality matching on 60 pair graphs and check 120 directional proportions. Similarity >=0.7 is signed cosine for SAEs/KMeans and absolute cosine for PCA. Divide by the source dictionary size; PCA has embedding-dimension width.",
+      "command": "python paper.py plan split-directions --config /path/to/resources.json\npython paper.py run split-directions --config /path/to/resources.json",
+      "gap": "Baseline weights and the original graph-construction caches are not included in the models bundle; graph optima are independently recomputed.",
+      "workflow": "split-directions"
+    },
+    {
+      "id": "hierarchy-f1",
+      "title": "Ground-truth hierarchy recovery",
+      "paper": [
+        "Figure 2c"
+      ],
+      "assets": [],
+      "code": [
+        "src/atomic_features/reproduce.py",
+        "src/atomic_features/hierarchy.py",
+        "src/atomic_features/probes.py",
+        "src/atomic_features/targets.py",
+        "src/atomic_features/sae.py",
+        "scripts/hierarchy/export_hierarchy_regret_latex.py",
+        "scripts/hierarchy/hierarchy_probe_computation.py"
+      ],
+      "inputs": [
+        "results/hierarchy/{wordfreq,geonames_country_questions,geonames_continent_questions,gbif}/*/summary.tsv",
+        "results/reference/hierarchy_mean_f1.tex",
+        "evaluation: ordered rows, splits, embeddings and target memberships; models: 18 full-corpus SAEs"
+      ],
+      "method": "Reaggregate 72 saved fits into 90 cells, pooling category-model trajectories. Feature/threshold selection uses training rows only; test F1 uses held-out rows. Positive thresholds predict activation >= threshold. GBIF eligibility counts source species and common-name labels union their species memberships.",
+      "command": "python paper.py plan main-numbers --config /path/to/resources.json\npython paper.py run main-numbers --config /path/to/resources.json",
+      "gap": "The compact command reaggregates saved fits. The hierarchy-probes workflow refits all 72 dataset/model/width combinations from sparse activations; encode/probe supports individual fits from exported model inputs.",
+      "workflow": "main-numbers"
+    },
+    {
+      "id": "prefix-example",
+      "title": "Parent and child a-prefix recovery",
+      "paper": [
+        "Figure 3a"
+      ],
+      "assets": [
+        "FigPrefixFOne",
+        "FigPrefixRecall"
+      ],
+      "code": [
+        "scripts/hierarchy/aggregate_probes.py",
+        "scripts/hierarchy/compute_wordfreq_a_probe_prefix_recall.py",
+        "scripts/hierarchy/run_hierarchy_activation_probes.py",
+        "scripts/hierarchy/aggregate_hierarchy_probes.py",
+        "scripts/hierarchy/plot_wordfreq_a_prefix_figures.py"
+      ],
+      "inputs": [
+        "Wordfreq Gemini probe summary.tsv files across nine widths (included in results)",
+        "Wordfreq rows.csv (evaluation)",
+        "Original per-width sparse activation caches (not bundled; regenerable from embeddings and models)"
+      ],
+      "method": "Upper panel: held-out F1 for the a-prefix and eligible two-letter children, selecting each detector separately. Lower panel: fix the training-selected a detector at each width and compute recall by prefix on all 200,000 words, including training and test rows.",
+      "command": "python paper.py plan prefix-example --config /path/to/resources.json\npython paper.py run prefix-example --config /path/to/resources.json",
+      "gap": "Run prefix-recall before prefix-example to recompute recall. The original hierarchy sparse cache format differs from the CSR NPZ written by the package encode command.",
+      "workflow": "prefix-example"
+    },
+    {
+      "id": "curated-hierarchies",
+      "title": "Computed containment graph and curated Food/Music examples",
+      "paper": [
+        "Figure 3b",
+        "Figure 21",
+        "Tables 8\u20139"
+      ],
+      "assets": [
+        "TabCompactHierarchies",
+        "FigFoodHierarchy",
+        "FigMusicHierarchy",
+        "TabFoodExamples",
+        "TabMusicExamples"
+      ],
+      "code": [
+        "scripts/compute_gemini_131k_cooccurrence.py",
+        "scripts/find_gemini_131k_parent_child_pairs.py",
+        "scripts/hierarchy/export_compact_food_music_table.py",
+        "scripts/containment/plot_food_illustration.py",
+        "scripts/containment/plot_music_medium.py",
+        "scripts/containment/make_dropin.py",
+        "scripts/containment/fit_table_height.py",
+        "scripts/containment/extract_examples.py",
+        "scripts/containment/generate_tables.py"
+      ],
+      "inputs": [
+        "Gemini 131K post-TopK activation cache on 89,827,558 rows",
+        "parent_child_pairs/gemini_m131072_k128_gt_0p05_rlower_0p7: counts, pair CSVs, summary/block arrays",
+        "full_experiments/results/gemini_131k_hierarchical_families/: selections, edges, text examples and labels"
+      ],
+      "method": "Active means >0.05. Require child/coactivation support >=100, parent support > child support, 95% Wilson lower containment >=0.70, reverse containment <=0.50, lift >=5; remove shortcuts with a qualifying two-edge path. The 114,762 retained pairs form the computed graph. Humans select and label 33 features/32 edges per displayed hierarchy; the compact table retains all 66 features/64 edges.",
+      "command": "python paper.py plan compact-hierarchies --config /path/to/resources.json\npython paper.py run compact-hierarchies --config /path/to/resources.json",
+      "gap": "Supply graph caches, saved selections, and labels. Use path_aliases to resolve recorded resource locations.",
+      "workflow": "compact-hierarchies"
+    },
+    {
+      "id": "training-provenance",
+      "title": "Training corpus, sparsities, seeds and budgets",
+      "paper": [
+        "Tables 3\u20135",
+        "Table 7 (seed control)"
+      ],
+      "assets": [],
+      "code": [
+        "data_prep/00_download_data.py",
+        "data_prep/00_sample_paq.py",
+        "data_prep/00_sample_miracl.py",
+        "data_prep/01_embed_data_gemini.py",
+        "data_prep/01_embed_data_nemotron.py",
+        "scripts/generate_model_configs.py",
+        "trainer/train.py",
+        "trainer/dataset.py",
+        "trainer/sae.py",
+        "tools/inventory_training_data.py",
+        "scripts/review_controls/directions.py",
+        "scripts/hierarchy/run_prefix_recovery_k128.py",
+        "release/provenance/control-checkpoints.json"
+      ],
+      "inputs": [
+        "recipes/configs/: 26 training configurations",
+        "recipes/provenance/training-checkpoints.json, training-corpora.json, training-shards.json",
+        "Original checkpoint configs and 1,852 shard metadata/header records",
+        "Nine control recipes generated with --include-controls; original and control checkpoints remain external."
+      ],
+      "method": "Tables are authored LaTeX checked against recorded provenance. Gemini has 89,827,558 rows in 929 shards; Nemotron has 89,227,558 in 923. MIRACL title/text are separate prepared collections. PAQ samples 10M records with seed 42 and emits questions and answers. One-million-step budgets except Gemini 131K (two million, auxiliary coefficient 1). The control table records all nine fixed-k/alternate-seed checkpoints with full SHA-256 identities, seeds and budgets.",
+      "command": "python paper.py script --config /path/to/resources.json -- scripts/generate_model_configs.py --include-controls\npython paper.py script --config /path/to/resources.json -- tools/inventory_training_data.py --output /path/to/training-shards.json",
+      "gap": "Metadata hashes identify shard descriptions, not dense tensor contents. Training-state continuation requires compatible optimizer and RNG states."
+    },
+    {
+      "id": "evaluation-provenance",
+      "title": "Hierarchy datasets, labels and saved splits",
+      "paper": [
+        "Appendix: P3 dataset counts and splits"
+      ],
+      "assets": [],
+      "code": [
+        "src/atomic_features/targets.py",
+        "hierarchy_data_prep/prepare_wordfreq.py",
+        "hierarchy_data_prep/prepare_geonames.py",
+        "hierarchy_data_prep/prepare_geonames_questions.py"
+      ],
+      "inputs": [
+        "evaluation/datasets.json",
+        "evaluation/*/{rows.csv,targets.json,targets.npz,embeddings_*.npy}",
+        "evaluation/gbif_metadata/"
+      ],
+      "method": "Rows, ordering, and original train/test labels are preserved. Country and continent question datasets are distinct from bare city-name inputs. Category filtering removes targets, not rows. GBIF common-name targets use unions of source species memberships.",
+      "command": "Inspect evaluation/datasets.json; use atomic-features encode and probe as documented in REPRODUCTION.md.",
+      "gap": "Embedding regeneration requires the specified providers and preprocessing settings."
+    },
+    {
+      "id": "strict-persistence",
+      "title": "Strict exclusive persistence",
+      "paper": [
+        "Figure 6"
+      ],
+      "assets": [
+        "FigPersistentStabilityStrict"
+      ],
+      "code": [
+        "scripts/stability/paper_stability_appendix.py",
+        "scripts/stability/dictionary_exclusive_matches.py"
+      ],
+      "inputs": [
+        "full_experiments/results/matches/t1_0.7_t2_0.7/: pairwise exclusive caches"
+      ],
+      "method": "Require a signed-cosine edge strictly >0.7 with no other above-threshold partner at either endpoint, in every larger dictionary. This is a different statistic and threshold convention from Figure 2a.",
+      "command": "python paper.py plan exclusive-persistence --config /path/to/resources.json\npython paper.py run exclusive-persistence --config /path/to/resources.json",
+      "gap": "Requires exclusive pair caches.",
+      "workflow": "exclusive-persistence"
+    },
+    {
+      "id": "thresholds",
+      "title": "Persistence sensitivity to cosine/Pearson thresholds",
+      "paper": [
+        "Figures 8\u20139"
+      ],
+      "assets": [
+        "FigPersistentStabilityThresholds",
+        "FigPersistentStabilityPearsonThresholds"
+      ],
+      "code": [
+        "scripts/stability/paper_persistent_threshold_sweep.py",
+        "scripts/stability/persistent_matching.py"
+      ],
+      "inputs": [
+        "full_experiments/results/persistent_stability_threshold_sweep/",
+        "Original decoder checkpoints and cross-width retained Pearson neighbors/manifests"
+      ],
+      "method": "Independently match each full-source graph and intersect matched source IDs at thresholds 0.5, 0.6, 0.7 and 0.8. Decoder edges are exhaustive signed cosine; Pearson uses retained candidates. Independent intersections need not be monotone in the threshold and candidate intersections are not certified lower bounds.",
+      "command": "python paper.py plan thresholds --config /path/to/resources.json\npython paper.py run thresholds --config /path/to/resources.json",
+      "gap": "The threshold sweep requires candidate arrays, graph manifests, and reference caches for each threshold.",
+      "workflow": "thresholds"
+    },
+    {
+      "id": "exclusive-splits",
+      "title": "Alternative exclusive cross-distribution matching",
+      "paper": [
+        "Figure 13"
+      ],
+      "assets": [
+        "FigSplitMatchesExclusive"
+      ],
+      "code": [
+        "scripts/stability/split_16384_match_heatmaps.py",
+        "scripts/stability/dictionary_exclusive_matches.py",
+        "scripts/stability/paper_sae_pca_split_heatmaps.py"
+      ],
+      "inputs": [
+        "Full/wiki/no-wiki/random1/random2 SAE and PCA dictionaries for each embedding model",
+        "split_matches/exclusive_pca_absolute_0.7/matches/split_pca_match_counts.csv and signed SAE exclusive results"
+      ],
+      "method": "Exclusive edges use similarity > 0.7 and degree one at both endpoints. SAE cosine is signed; PCA cosine is absolute for admission and competitors. PCA maximum and exclusive proportions are identical on these saved graphs; the maximum is 15.0716%.",
+      "command": "python paper.py plan split-directions --config /path/to/resources.json\npython paper.py run split-directions --config /path/to/resources.json",
+      "gap": "Requires baseline dictionaries and exclusive-match caches.",
+      "workflow": "split-directions"
+    },
+    {
+      "id": "activation-splits",
+      "title": "Cross-distribution activation matching",
+      "paper": [
+        "Figure 14"
+      ],
+      "assets": [
+        "FigSplitActivationMatches"
+      ],
+      "code": [
+        "scripts/match_split_sae_activation_sketch.py",
+        "scripts/rescore_split_sae_activations_shared.py",
+        "scripts/stability/plot_split_activation_heatmaps.py"
+      ],
+      "inputs": [
+        "full_experiments/results/split_sae_activation_sketch512_candidates32_top5/counts.csv and directional neighbors",
+        "16K SAE activations on each displayed row distribution"
+      ],
+      "method": "Each heatmap row fixes the evaluation distribution for both SAEs. Use fresh 512-dimensional CountSketch, 32 candidate neighbors per direction, full-row Pearson rescoring, top-five retention, and exact maximum-cardinality matching at signed Pearson >=0.7. Counts are candidate-graph lower bounds.",
+      "command": "python paper.py plan split-activations --config /path/to/resources.json\npython paper.py run split-activations --config /path/to/resources.json",
+      "gap": "The compact candidates bundle contains cross-width neighbors, not these distribution-specific split neighbors.",
+      "workflow": "split-activations"
+    },
+    {
+      "id": "synthetic-recovery",
+      "title": "Synthetic prefix recovery under width, frequency and sparsity variation",
+      "paper": [
+        "Figures 22\u201323"
+      ],
+      "assets": [
+        "FigRecoveryPrefixAlphaPerWidth",
+        "FigRecoveryPrefixKPerWidth"
+      ],
+      "code": [
+        "experiments/recovery_principle/scaling/billion/code/plot_width.py",
+        "experiments/recovery_principle/scaling/billion/code/analyze.py",
+        "experiments/recovery_principle/scaling/billion/code/run.py",
+        "experiments/recovery_principle/code/distributions.py"
+      ],
+      "inputs": [
+        "recipes/synthetic/results/checkpoints.csv: saved checkpoint evaluation table",
+        "recipes/synthetic/configs/sweep.json: training design",
+        "Upstream: 468 trajectories, 11 milestones, original synthetic model/evaluation files"
+      ],
+      "method": "Final budget 1,024,000,000 examples, three paired seeds, generating sparsity K=8. Sample fixed-size supports with probabilities proportional to products of rank weights. Geometric recovery uses cosine >=0.9; activation recovery uses separate validation/test streams and injective assignment at F1 >=0.8. Prefixes permit 10% misses; hierarchical units are three atoms per complete family. Plot prefix atoms/SAE width; bands are seed ranges, not confidence intervals.",
+      "command": "python paper.py plan synthetic-recovery --config /path/to/resources.json\npython paper.py run synthetic-recovery --config /path/to/resources.json",
+      "gap": "Replotting requires saved numerical CSVs; training and evaluation require all 468 trajectories and their milestone checkpoints.",
+      "workflow": "synthetic-recovery"
+    },
+    {
+      "id": "synthetic-persistence",
+      "title": "Persistence across learned synthetic SAEs",
+      "paper": [
+        "Figures 24\u201325"
+      ],
+      "assets": [
+        "FigSimulationPersistenceAlphaProportionTight",
+        "FigSimulationPersistenceKProportionTight"
+      ],
+      "code": [
+        "experiments/recovery_principle/scaling/billion/code/persistence_threshold.py",
+        "experiments/recovery_principle/scaling/billion/code/persistence.py",
+        "experiments/recovery_principle/scaling/billion/code/plot_persistence.py",
+        "experiments/recovery_principle/scaling/billion/code/verify_persistence_optima.py",
+        "scripts/stability/persistent_matching.py"
+      ],
+      "inputs": [
+        "experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8/: counts, graphs, summaries and witnesses",
+        "78 groups of six final checkpoints; shared 400,000-row held-out streams per group"
+      ],
+      "method": "Independent full-source pairwise maximum matchings followed by intersection of matched source IDs on exhaustive signed cosine and continuous-activation Pearson graphs at >=0.8. Normalize by every source coordinate, including inactive ones. This measures learned-SAE persistence and does not impose ground-truth recovery, family completeness, or a prefix miss allowance.",
+      "command": "python paper.py plan synthetic-persistence --config /path/to/resources.json\npython paper.py run synthetic-persistence --config /path/to/resources.json",
+      "gap": "Reporting also verifies graph optima and compares the 0.7 baseline. Both thresholds\u2019 graph/checkpoint provenance trees are required and are not in the compact bundles.",
+      "workflow": "synthetic-persistence"
+    },
+    {
+      "id": "dates",
+      "title": "Calendar-date manifolds and month-feature activations",
+      "paper": [
+        "Figure 27, upper panels"
+      ],
+      "assets": [
+        "FigDates"
+      ],
+      "code": [
+        "experiments/day_of_year/plot_gemini_dates_summary.py",
+        "experiments/day_of_year/run.py",
+        "experiments/day_of_year/plot_gemini_smaller_dictionaries.py",
+        "experiments/day_of_year/plot_gemini_date_embeddings_pca.py",
+        "experiments/day_of_year/plot_gemini131k_month_pca.py"
+      ],
+      "inputs": [
+        "experiments/day_of_year/results/gemini_date_embeddings_pca/gemini_date_embeddings_pca3.npz",
+        "experiments/day_of_year/results/gemini_smaller_dictionaries/m131072/{gemini_month_features_pca2,matched_feature_activations}.npz",
+        "Seed-42 d65536_k128_f32 reference checkpoint, separate from the main 65K SAE, when regenerating decoder matches."
+      ],
+      "method": "All 366 month/day strings, including February 29, in calendar order. Twelve features selected in Gemini 65K are mapped by decoder cosine into Gemini 131K. Display saved raw-embedding and feature PCA coordinates and raw post-TopK activations; mean-center PCA without standardization. The renderer checks date/feature alignment and preserves the cached PCA orientation.",
+      "command": "python paper.py plan dates --config /path/to/resources.json\npython paper.py run dates --config /path/to/resources.json",
+      "gap": "Date embeddings, selected features and PCA caches are not in the hierarchy evaluation bundle; original selection is documented in experiments/day_of_year/SUMMARY_FIGURE.md.",
+      "workflow": "dates"
+    },
+    {
+      "id": "colors",
+      "title": "Color manifolds and color-feature activations",
+      "paper": [
+        "Figure 27, lower panels"
+      ],
+      "assets": [
+        "FigColors"
+      ],
+      "code": [
+        "experiments/colors/plot_gemini_colors_summary.py",
+        "experiments/colors/plot_selected_color_feature_swatches.py",
+        "experiments/colors/plot_gemini_sae_color_pca.py"
+      ],
+      "inputs": [
+        "experiments/colors/data/gemini_embeddings/{rows.csv,embeddings.npy}",
+        "experiments/colors/results/color_names_hex_gemini_d131072_selected_ranks_thr0p05_pca/",
+        "experiments/colors/results/color_names_hex_gemini_d131072_selected_ranks_thr0p05_swatches/selected_features_hue_activations.csv"
+      ],
+      "method": "Use eight selected Gemini 131K features. Deduplicate 865 named-color rows by hex, then retain saturation >=0.60, value >=0.50 and lightness <=0.70: 374 colors. Refit raw-embedding and eight-feature PCAs on the same filtered rows, mean-centering without standardization. Plot raw post-TopK activations; 0.05 is a feature-selection threshold, not an extra cutoff on displayed activations.",
+      "command": "python paper.py plan colors --config /path/to/resources.json\npython paper.py run colors --config /path/to/resources.json",
+      "gap": "Requires color embeddings and activation exports. Filtering and feature selection are documented in experiments/colors/README.md.",
+      "workflow": "colors"
+    },
+    {
+      "id": "color-examples",
+      "title": "Selected color features: text and artwork examples",
+      "paper": [
+        "Table 12"
+      ],
+      "assets": [
+        "TabColorExamples",
+        "ColorExamplesPath"
+      ],
+      "code": [
+        "experiments/colors/plot_gemini_color_feature_examples.py",
+        "experiments/colors/extract_selected_general_corpus_examples.py",
+        "experiments/colors/render_color_examples_table.py"
+      ],
+      "inputs": [
+        "experiments/colors/results/gemini_color_feature_examples_table/{table.tex,sources.json,*.jpg,*.pdf}",
+        "General-corpus top-text exports and WikiArt embedding/activation cache referenced by sources.json"
+      ],
+      "method": "Eight selected features, five distinct text examples and five artwork examples per feature. sources.json records source rows, scores, text deduplication, artwork attribution and selections.",
+      "command": "python paper.py plan color-examples --config /path/to/resources.json\npython paper.py run color-examples --config /path/to/resources.json",
+      "gap": "The renderer constructs the final layout and all 80 activation labels from sources.json. Artwork and Unicode fonts/snippets are external. It renders frozen selections without recomputing global activation ranks.",
+      "workflow": "color-examples"
+    },
+    {
+      "id": "cross-model-cardinality",
+      "title": "Same-width cross-model maximum matching",
+      "paper": [
+        "Figure 28"
+      ],
+      "assets": [
+        "FigCrossModelCardinalityThresholds"
+      ],
+      "code": [
+        "scripts/stability/paper_cross_model_cardinality.py",
+        "scripts/match_cross_family_width_sketch.py"
+      ],
+      "inputs": [
+        "full_experiments/results/gemini_nemotron_all_widths_sketch512_candidates32_top5/",
+        "full_experiments/results/cross_model_same_width_cardinality_pearson_0.7/"
+      ],
+      "method": "For all nine widths, union both directional top-five edge lists at signed Pearson thresholds 0.5, 0.6, 0.7, 0.8 and solve maximum-cardinality matching. Divide by the common SAE width. These graph optima are lower bounds on exhaustive matching; width 131K is included because a larger width is not needed.",
+      "command": "python paper.py plan cross-model --config /path/to/resources.json\npython paper.py run cross-model --config /path/to/resources.json",
+      "gap": "Requires cross-model candidate arrays and threshold-sweep graphs.",
+      "workflow": "cross-model"
+    },
+    {
+      "id": "semantic-examples",
+      "title": "Texts illustrating cross-model feature correspondence",
+      "paper": [
+        "Tables 13\u201324"
+      ],
+      "assets": [
+        "TabPlatonicExamples"
+      ],
+      "code": [
+        "scripts/build_pearson_appendix_tables.py"
+      ],
+      "inputs": [
+        "full_experiments/plots/platonic_features_131k_pearson/main_examples/selection_and_examples.json",
+        "full_experiments/plots/platonic_features_131k_pearson/semantic_mnn_search/straightforward_examples.json"
+      ],
+      "method": "Twelve selected feature-pair tables: two semantic examples and ten diverse examples, 15 texts per side, activation bins (0.05,0.1] and >0.1 with the documented low-activation exception. Illustrative curation, not a random population estimate.",
+      "command": "python paper.py plan semantic-examples --config /path/to/resources.json\npython paper.py run semantic-examples --config /path/to/resources.json",
+      "gap": "Frozen selection and text-example JSON inputs are external. semantic-render rebuilds the final TeX; semantic-examples resamples from original binned caches.",
+      "workflow": "semantic-examples"
+    },
+    {
+      "id": "asset-figindividualcategoryrecovery",
+      "title": "Recovery of individual hierarchy categories",
+      "paper": [
+        "Figure 17"
+      ],
+      "assets": [
+        "FigIndividualCategoryRecovery"
+      ],
+      "inputs": [
+        "full_experiments/plots/individual_category_recovery_f1_gt_0p6_separate_prompts/individual_category_recovery_proportions_appendix.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Reaggregate saved confusion counts; recovered means exact rational held-out F1 > 0.6. Cohorts: 242 Prefix, 93 Cities, 499 GBIF categories per model; no re-selection on test.",
+      "code": [
+        "scripts/hierarchy/plot_individual_category_recovery.py"
+      ],
+      "command": "python paper.py plan individual-recovery --config /path/to/resources.json\npython paper.py run individual-recovery --config /path/to/resources.json",
+      "workflow": "individual-recovery"
+    },
+    {
+      "id": "asset-figadjacentpairrecovery",
+      "title": "Joint recovery of parent and child categories",
+      "paper": [
+        "Figure 18"
+      ],
+      "assets": [
+        "FigAdjacentPairRecovery"
+      ],
+      "inputs": [
+        "full_experiments/plots/parent_child_pair_recovery_f1_gt_0p6_separate_prompts/parent_child_pair_recovery_proportions_appendix.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Both parent/child held-out F1 > 0.6 with distinct feature IDs within each pair. Eligible adjacent pairs: 216 Prefix, 87 Cities, 453 GBIF. Geography uses separate prompt collections for the two detectors.",
+      "code": [
+        "scripts/hierarchy/plot_parent_child_pair_recovery.py"
+      ],
+      "command": "python paper.py plan parent-child-recovery --config /path/to/resources.json\npython paper.py run parent-child-recovery --config /path/to/resources.json",
+      "workflow": "parent-child-recovery"
+    },
+    {
+      "id": "asset-figgeminiprefixfonegrid",
+      "title": "Prefix recovery across dictionary widths",
+      "paper": [
+        "Figure 19"
+      ],
+      "assets": [
+        "FigGeminiPrefixFOneGrid"
+      ],
+      "inputs": [
+        "full_experiments/plots/gemini_letter_prefix_f1/gemini_prefix_f1_b_to_z_grid.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "25 panels include a and exclude x. Each parent and child uses its own train-selected detector; all eligible children enter an unweighted mean; all nine original widths.",
+      "code": [
+        "scripts/hierarchy/plot_gemini_prefix_f1_grid.py"
+      ],
+      "command": "python paper.py plan prefix-grid --config /path/to/resources.json\npython paper.py run prefix-grid --config /path/to/resources.json",
+      "workflow": "prefix-grid"
+    },
+    {
+      "id": "asset-fighierarchyfonelines",
+      "title": "Mean hierarchy F1 across dictionary widths",
+      "paper": [
+        "Figure 2c"
+      ],
+      "assets": [
+        "FigHierarchyFOneLines"
+      ],
+      "inputs": [
+        "full_experiments/plots/hierarchy_mean_f1_lines/hierarchy_mean_f1_original.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Reaggregate 72 original-schedule probe runs; verify confusion counts, fixed category cohorts, and all 90 five-decimal table means before plotting.",
+      "code": [
+        "scripts/hierarchy/plot_hierarchy_mean_f1_lines.py"
+      ],
+      "command": "python paper.py plan hierarchy-original --config /path/to/resources.json\npython paper.py run hierarchy-original --config /path/to/resources.json",
+      "workflow": "hierarchy-original"
+    },
+    {
+      "id": "asset-fighierarchyfonefixedk",
+      "title": "Mean hierarchy F1 with fixed TopK sparsity",
+      "paper": [
+        "Figure 16"
+      ],
+      "assets": [
+        "FigHierarchyFOneFixedK"
+      ],
+      "inputs": [
+        "full_experiments/plots/hierarchy_mean_f1_lines/hierarchy_mean_f1_k128.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Pool the same category-model pairs at widths 512,4096,32768,65536,131072 with k=128. Six additional checkpoints supply the first three widths; final two reuse the original models.",
+      "code": [
+        "scripts/hierarchy/plot_hierarchy_mean_f1_lines.py"
+      ],
+      "command": "python paper.py plan hierarchy-k128 --config /path/to/resources.json\npython paper.py run hierarchy-k128 --config /path/to/resources.json",
+      "workflow": "hierarchy-k128"
+    },
+    {
+      "id": "asset-tabempiricalmolecules",
+      "title": "Linear reconstruction of the a-prefix molecule",
+      "paper": [
+        "Table 1"
+      ],
+      "assets": [
+        "TabEmpiricalMolecules"
+      ],
+      "inputs": [
+        "full_experiments/plots/a_prefix_empirical_molecule_table.tex",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Float64 unconstrained minimum-norm least squares on all 23 selected 131K a-prefix decoder columns, with ac/ak duplicates retained. Display five positive coefficients >=0.015, use train-selected thresholds, held-out recalls, and the documented test-recall display filter.",
+      "code": [
+        "scripts/hierarchy/plot_a_prefix_empirical_molecule_table.py",
+        "scripts/hierarchy/run_all_a_prefix_linear_reconstruction.py",
+        "scripts/hierarchy/run_a_prefix_linear_reconstruction.py"
+      ],
+      "command": "python paper.py plan prefix-molecules --config /path/to/resources.json\npython paper.py run prefix-molecules --config /path/to/resources.json",
+      "workflow": "prefix-molecules"
+    },
+    {
+      "id": "asset-figaprefixprobedecodercosines",
+      "title": "Cosines between prefix-detector decoder directions",
+      "paper": [
+        "Figure 26"
+      ],
+      "assets": [
+        "FigAPrefixProbeDecoderCosines"
+      ],
+      "inputs": [
+        "full_experiments/plots/a_prefix_probe_decoder_cosines.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Compute signed cosines directly from 22 unique checkpoint decoder rows at each width (32768 and 131072); 231 unordered pairs per panel. The compute stage precedes existing matrix renderer.",
+      "code": [
+        "scripts/hierarchy/plot_a_prefix_probe_decoder_cosines.py",
+        "scripts/hierarchy/compute_a_prefix_probe_decoder_cosines.py"
+      ],
+      "command": "python paper.py plan prefix-cosines-compute --config /path/to/resources.json\npython paper.py run prefix-cosines-compute --config /path/to/resources.json",
+      "workflow": "prefix-cosines"
+    },
+    {
+      "id": "asset-tabtransformexamples",
+      "title": "Transformation-molecule fit and examples",
+      "paper": [
+        "Tables 2 and 11"
+      ],
+      "assets": [
+        "TabTransformExamples"
+      ],
+      "inputs": [
+        "full_experiments/plots/target_3290_transform_mix_selected_12.tex"
+      ],
+      "method": "First OMP support with raw squared residual <=0.05 has 17 terms. Cached activation cells are measured separately and examples curated. Recompute the numerical fit with transform-fit and example tables with transform-examples.",
+      "code": [
+        "scripts/reproduce_target_3290.py",
+        "scripts/sparse_decoder_reconstruction.py",
+        "scripts/build_target_3290_transform_mix_small_table.py"
+      ],
+      "command": "python paper.py run transform-fit --config /path/to/resources.json\npython paper.py run transform-examples --config /path/to/resources.json",
+      "workflow": "transform-examples"
+    },
+    {
+      "id": "asset-figwidthprevalencemedian",
+      "title": "Prevalence and persistence across widths",
+      "paper": [
+        "Figure 12"
+      ],
+      "assets": [
+        "FigWidthPrevalenceMedian"
+      ],
+      "inputs": [
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/paper/width_prevalence_median.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "One pooled positive-activation median per SAE; strict > median prevalence. Up to ten quantile bins keep prevalence ties together. Outcome is membership in the independently intersected direction matchings; AUC uses half-credit ties.",
+      "code": [
+        "scripts/review_controls/plot_median_paper.py",
+        "scripts/review_controls/median_report.py",
+        "scripts/review_controls/update_width_persistence.py"
+      ],
+      "command": "python paper.py plan prevalence-panels --config /path/to/resources.json\npython paper.py run prevalence-panels --config /path/to/resources.json",
+      "workflow": "prevalence-panels"
+    },
+    {
+      "id": "asset-figsplitprevalencemedian",
+      "title": "Prevalence and matching across distributions",
+      "paper": [
+        "Figure 15"
+      ],
+      "assets": [
+        "FigSplitPrevalenceMedian"
+      ],
+      "inputs": [
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/paper/cross_distribution_prevalence_median.pdf",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Calibrate one pooled positive median on full corpus, including MIRACL. On disjoint dataset partitions, compute min prevalence of the SAME source feature in each distribution and compare with direction-matching membership. Eight directional comparisons; all/nonzero populations separate.",
+      "code": [
+        "scripts/review_controls/plot_median_paper.py",
+        "scripts/review_controls/median_report.py",
+        "scripts/review_controls/median_counts.py"
+      ],
+      "command": "python paper.py plan prevalence-panels --config /path/to/resources.json\npython paper.py run prevalence-panels --config /path/to/resources.json",
+      "workflow": "prevalence-panels"
+    },
+    {
+      "id": "asset-tabfixedsourceswap",
+      "title": "Persistence with a fixed-k source dictionary",
+      "paper": [
+        "Table 6"
+      ],
+      "assets": [
+        "TabFixedSourceSwap"
+      ],
+      "inputs": [
+        "full_experiments/results/sparsity_seed_controls/fixed_source_swap/table.tex",
+        "See the workflow requires list in registry.json for computation inputs."
+      ],
+      "method": "Replace only each source at widths 512,4096,32768 by k=128; keep every original larger target and independent pairwise-intersection matching. This is not persistence along an all-k=128 target sweep.",
+      "code": [
+        "scripts/review_controls/report_fixed_source_swap.py",
+        "scripts/review_controls/fixed_source_swap.py"
+      ],
+      "command": "python paper.py plan fixed-source-table --config /path/to/resources.json\npython paper.py run fixed-source-table --config /path/to/resources.json",
+      "workflow": "fixed-source-table"
+    },
+    {
+      "id": "sae-kmeans-prevalence",
+      "title": "SAE and KMeans feature prevalence",
+      "paper": [
+        "Figures 10\u201311"
+      ],
+      "assets": [
+        "FigSaeKmeansPrevalence",
+        "FigSaeKmeansPrevalenceFixedK"
+      ],
+      "inputs": [
+        "External input resources listed in registry.json and REPRODUCTION.md"
+      ],
+      "method": "SAE strict pooled-positive-median activation frequency versus KMeans nearest-centroid frequency; 100 full-corpus iterations; KDE bandwidth 0.12 in log10 units, density integrates to positive-rate feature count, square-root display scale. Four KMeans widths are now mandatory. Fixed-k counterpart uses five SAE widths.",
+      "code": [
+        "scripts/plot_sae_kmeans_prevalence.py",
+        "scripts/plot_fixed_k128_sae_kmeans_prevalence.py",
+        "scripts/fixed_k128_sae_prevalence.py",
+        "scripts/train_kmeans_full_corpus.py",
+        "scripts/continue_full_corpus_kmeans_widths.py",
+        "scripts/kmeans_512_iter100.py",
+        "scripts/kmeans_prevalence_iter100.py"
+      ],
+      "command": "python paper.py run prevalence --config /path/to/resources.json",
+      "workflow": "prevalence"
+    },
+    {
+      "id": "prefix-grid-fixed-k",
+      "title": "Prefix recovery with fixed TopK sparsity",
+      "paper": [
+        "Figure 20"
+      ],
+      "assets": [
+        "FigGeminiPrefixFOneGridFixedK"
+      ],
+      "inputs": [
+        "External input resources listed in registry.json and REPRODUCTION.md"
+      ],
+      "method": "The same 25 letter panels at widths 512,4096,32768,65536,131072 and k=128. No test-F1 filtering.",
+      "code": [
+        "scripts/hierarchy/plot_gemini_prefix_f1_grid.py"
+      ],
+      "command": "python paper.py run prefix-grid-k128 --config /path/to/resources.json",
+      "workflow": "prefix-grid-k128"
+    }
+  ],
+  "artifacts": [
+    {
+      "macro": "FigPersistentStability",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/persistent_stability_pairwise_0.7/persistent_stability_cosine.pdf"
+      ],
+      "notes": "Intersection of source IDs in independently computed full-graph maximum-cardinality matchings to every larger SAE, with fixed feature ordering and SciPy 1.15.3 tie-breaking; threshold >=0.7. Counts and source-width-normalized proportions for Gemini and Nemotron. Exhaustive signed decoder cosine graphs.",
+      "producer": "scripts/stability/paper_pairwise_persistence.py"
+    },
+    {
+      "macro": "FigPersistentStabilityStrict",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/stability_appendix_0.7/strict_all_larger.pdf"
+      ],
+      "notes": "Strict exclusive signed cosine >0.7 in every larger trained dictionary; count and proportion.",
+      "producer": "scripts/stability/paper_stability_appendix.py"
+    },
+    {
+      "macro": "FigPersistentStabilityPearson",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/persistent_stability_pairwise_0.7/persistent_stability_pearson.pdf"
+      ],
+      "notes": "Intersection of source IDs in independently computed full-graph maximum-cardinality matchings to every larger SAE, with fixed feature ordering and SciPy 1.15.3 tie-breaking; threshold >=0.7. Counts and source-width-normalized proportions for Gemini and Nemotron. Signed activation Pearson on retained bidirectional top-five candidate graphs; no guaranteed lower-bound relation to exhaustive independent-intersection persistence.",
+      "producer": "scripts/stability/paper_pairwise_persistence.py"
+    },
+    {
+      "macro": "FigPersistentStabilityThresholds",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/persistent_stability_threshold_sweep/figure_2a_cosine_thresholds.pdf"
+      ],
+      "notes": "Independent full-source pairwise maximum matching and source-set intersection, using ascending feature IDs, sorted CSR, and SciPy 1.15.3. ",
+      "producer": "scripts/stability/paper_persistent_threshold_sweep.py"
+    },
+    {
+      "macro": "FigPersistentStabilityPearsonThresholds",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/persistent_stability_threshold_sweep/activation_pearson_thresholds.pdf"
+      ],
+      "notes": "Independent full-source pairwise maximum matching and source-set intersection, using ascending feature IDs, sorted CSR, and SciPy 1.15.3. Activation Pearson intersections on retained candidates have no guaranteed exhaustive-intersection lower bound.",
+      "producer": "scripts/stability/paper_persistent_threshold_sweep.py"
+    },
+    {
+      "macro": "FigCrossModelCardinalityThresholds",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/cross_model_same_width_cardinality_pearson_0.7/same_width_matching.pdf"
+      ],
+      "notes": "Same-width Gemini-Nemotron maximum-cardinality one-to-one activation matching at Pearson thresholds 0.5, 0.6, 0.7, 0.8 on 89,227,558 shared rows. Uses both directional retained candidate lists; lower bounds on exhaustive counts.",
+      "producer": "scripts/stability/paper_cross_model_cardinality.py"
+    },
+    {
+      "macro": "FigSplitMatches",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/split_matches/paper_sae_pca_0.7/maximum_cardinality_proportions.pdf"
+      ],
+      "notes": "Two-column SAE/PCA maximum-cardinality heatmap at cosine >=0.7: signed for SAEs, absolute for PCA. Uses the saved counts and color scale.",
+      "producer": "scripts/stability/paper_sae_pca_split_heatmaps.py"
+    },
+    {
+      "macro": "FigSplitActivationMatches",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/split_sae_activation_sketch512_candidates32_top5/activation_split_heatmaps_t0.7.pdf"
+      ],
+      "notes": "Distribution-specific 16K SAE activation matching at signed Pearson >=0.7. Both SAEs are evaluated on the row distribution; fresh 512-dimensional CountSketch, 32 candidates per feature per direction, exact rescoring and top-five retention. Maximum-cardinality counts are exact on retained graphs and lower bounds on exhaustive matching.",
+      "producer": "scripts/stability/plot_split_activation_heatmaps.py"
+    },
+    {
+      "macro": "FigSplitMatchesExclusive",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/split_matches/paper_sae_pca_0.7/exclusive_proportions.pdf"
+      ],
+      "notes": "Two-column SAE/PCA exclusive heatmap at both thresholds >0.7. Signed cosine for SAE; absolute cosine for PCA pair admission and competing partners. PCA counts recomputed; SAE counts preserved.",
+      "producer": "scripts/stability/paper_sae_pca_split_heatmaps.py"
+    },
+    {
+      "macro": "FigPrefixFOne",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/wordfreq_a_prefix_gemini_test_f1_by_width.pdf"
+      ],
+      "notes": "",
+      "producer": "scripts/hierarchy/plot_wordfreq_a_prefix_figures.py"
+    },
+    {
+      "macro": "FigIndividualCategoryRecovery",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/individual_category_recovery_f1_gt_0p6_separate_prompts/individual_category_recovery_proportions_appendix.pdf"
+      ],
+      "notes": "Individual categories with frozen held-out test F1 strictly >0.6. Proportion on the left and linked raw count on the right; fixed denominators 242 prefixes, 93 geography categories, 499 taxonomy categories. Different geography prompts by level.",
+      "producer": "scripts/hierarchy/plot_individual_category_recovery.py"
+    },
+    {
+      "macro": "FigAdjacentPairRecovery",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/parent_child_pair_recovery_f1_gt_0p6_separate_prompts/parent_child_pair_recovery_proportions_appendix.pdf"
+      ],
+      "notes": "Adjacent parent-child pairs with both frozen test F1 scores strictly >0.6 and distinct selected coordinates within each pair. Proportion on the left and raw count on the right; fixed denominators 216, 87, 453. Different geography prompts by level.",
+      "producer": "scripts/hierarchy/plot_parent_child_pair_recovery.py"
+    },
+    {
+      "macro": "FigGeminiPrefixFOneGrid",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/gemini_letter_prefix_f1/gemini_prefix_f1_a_to_z_excluding_x_grid.pdf"
+      ],
+      "notes": "Single-page 5x5 grid of Gemini a-z prefix F1 curves excluding x, using the same saved probes and nine widths as the main a-prefix panel. Parent, unweighted child mean, and individual children; no F1 filtering.",
+      "producer": "scripts/hierarchy/plot_gemini_prefix_f1_grid.py"
+    },
+    {
+      "macro": "FigGeminiPrefixFOneGridFixedK",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/gemini_letter_prefix_f1_k128/gemini_prefix_f1_a_to_z_excluding_x_grid.pdf"
+      ],
+      "notes": "Fixed-k=128 analog of the 5x5 Gemini prefix grid, including a and excluding x. Widths 512, 4096, 32768, 65536, 131072; same categories, splits, detector selection, and curve definitions. Generated from full_experiments/results/prefix_recovery_k128/all_summaries.tsv with --top-k 128 and these five --widths.",
+      "producer": "scripts/hierarchy/plot_gemini_prefix_f1_grid.py"
+    },
+    {
+      "macro": "FigPrefixRecall",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/wordfreq_a_probe_prefix_recall_heatmap_gemini.pdf"
+      ],
+      "notes": "Rendered from the saved recall CSV with --model gemini --figure recall-heatmap. Linear white-to-orange scale fixed at 0 to 1, matching Table 1 recall shading (xcolor orange RGB 1, 0.5, 0).",
+      "producer": "scripts/hierarchy/plot_wordfreq_a_prefix_figures.py"
+    },
+    {
+      "macro": "FigFoodHierarchy",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/gemini_131k_hierarchical_families/food_hierarchy_illustration.png"
+      ],
+      "notes": "",
+      "producer": "scripts/containment/plot_food_illustration.py"
+    },
+    {
+      "macro": "FigMusicHierarchy",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/gemini_131k_hierarchical_families/music_hierarchy_medium.png"
+      ],
+      "notes": "",
+      "producer": "scripts/containment/plot_music_medium.py"
+    },
+    {
+      "macro": "TabCompactHierarchies",
+      "kind": "table",
+      "sources": [
+        "full_experiments/results/gemini_131k_hierarchical_families/compact_main_text/food_music_hierarchies_table.tex"
+      ],
+      "notes": "Three-column hierarchy table with Food/Music multirows, one row per second-level feature, and semicolon-separated third-level features. Retains all 66 features and 64 relationships at 60% of text width.",
+      "producer": "scripts/hierarchy/export_compact_food_music_table.py"
+    },
+    {
+      "macro": "FigSaeKmeansPrevalence",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/sae_kmeans_prevalence_iter100/sae_kmeans_prevalence.pdf"
+      ],
+      "notes": "Gemini/Nemotron rows; SAE above pooled positive median at nine widths on the left; full-corpus raw-embedding KMeans at 512, 4,096, 16,384, and 131,072 clusters after 100 iterations on the right. Shared axes, count-scaled log10-prevalence KDEs with bandwidth 0.12, square-root vertical scale, consistent width colors. Validated counts are read without recomputing activations.",
+      "producer": "scripts/plot_sae_kmeans_prevalence.py"
+    },
+    {
+      "macro": "FigSaeKmeansPrevalenceFixedK",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/sae_kmeans_prevalence_fixed_k128_iter100/sae_kmeans_prevalence_fixed_k128.pdf"
+      ],
+      "notes": "Fixed TopK k=128 SAE prevalence at widths 512, 4,096, 32,768, 65,536, and 131,072, alongside the same full-corpus 100-iteration KMeans baseline at 512, 4,096, 16,384, and 131,072 clusters. Gemini/Nemotron rows, pooled positive median activation thresholds, count-scaled log10 KDEs with bandwidth 0.12, shared axes and square-root vertical scale.",
+      "producer": "scripts/plot_fixed_k128_sae_kmeans_prevalence.py"
+    },
+    {
+      "macro": "FigDates",
+      "kind": "figure",
+      "sources": [
+        "experiments/day_of_year/results/gemini_dates_summary.png"
+      ],
+      "notes": "",
+      "producer": "experiments/day_of_year/plot_gemini_dates_summary.py"
+    },
+    {
+      "macro": "FigColors",
+      "kind": "figure",
+      "sources": [
+        "experiments/colors/results/gemini_colors_summary.png"
+      ],
+      "notes": "",
+      "producer": "experiments/colors/plot_gemini_colors_summary.py"
+    },
+    {
+      "macro": "FigRecoveryPrefixAlphaPerWidth",
+      "kind": "figure",
+      "sources": [
+        "experiments/recovery_principle/scaling/billion/plots/width_prefix_alpha_sweep_1024M_proportion.pdf"
+      ],
+      "notes": "Available macro; not automatically inserted into the manuscript. Final 1,024M, three seeds, generating K=8. Hierarchical values are three atoms per complete family.",
+      "producer": "experiments/recovery_principle/scaling/billion/code/plot_width.py"
+    },
+    {
+      "macro": "FigRecoveryPrefixKPerWidth",
+      "kind": "figure",
+      "sources": [
+        "experiments/recovery_principle/scaling/billion/plots/width_prefix_k_sweep_1024M_proportion.pdf"
+      ],
+      "notes": "Available macro; not automatically inserted into the manuscript. Final 1,024M, three seeds, generating K=8. Hierarchical values are three atoms per complete family.",
+      "producer": "experiments/recovery_principle/scaling/billion/code/plot_width.py"
+    },
+    {
+      "macro": "FigSimulationPersistenceAlphaProportionTight",
+      "kind": "figure",
+      "sources": [
+        "experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8/plots/persistence_alpha_proportion_1024M.pdf"
+      ],
+      "notes": "Independent full-source pairwise maximum matching and source-set intersection, using ascending feature IDs, sorted CSR, and SciPy 1.15.3. ",
+      "producer": "experiments/recovery_principle/scaling/billion/code/plot_persistence.py"
+    },
+    {
+      "macro": "FigSimulationPersistenceKProportionTight",
+      "kind": "figure",
+      "sources": [
+        "experiments/recovery_principle/scaling/billion/results/persistence_1024M_t0.8/plots/persistence_k_proportion_1024M.pdf"
+      ],
+      "notes": "Independent full-source pairwise maximum matching and source-set intersection, using ascending feature IDs, sorted CSR, and SciPy 1.15.3. ",
+      "producer": "experiments/recovery_principle/scaling/billion/code/plot_persistence.py"
+    },
+    {
+      "macro": "FigHierarchyFOneLines",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/hierarchy_mean_f1_lines/hierarchy_mean_f1_original.pdf"
+      ],
+      "producer": "scripts/hierarchy/plot_hierarchy_mean_f1_lines.py",
+      "notes": "Figure 2(c): Prefix, Cities, and GBIF mean test F1 curves, comprising 90 pooled category-model means."
+    },
+    {
+      "macro": "FigHierarchyFOneFixedK",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/hierarchy_mean_f1_lines/hierarchy_mean_f1_k128.pdf"
+      ],
+      "producer": "scripts/hierarchy/plot_hierarchy_mean_f1_lines.py",
+      "notes": "Fixed k=128 counterpart of Figure 2(c), pooled across Gemini/Nemotron at five widths. The 65K and 131K checkpoints also serve the main width sweep."
+    },
+    {
+      "macro": "TabFoodExamples",
+      "kind": "table",
+      "sources": [
+        "full_experiments/results/gemini_131k_hierarchical_families/latex_dropin/food_table.tex"
+      ],
+      "notes": "Exact imported table match. The scripts/containment/fit_table_height.py postprocessor also controls table sizing.",
+      "producer": "scripts/containment/make_dropin.py"
+    },
+    {
+      "macro": "TabMusicExamples",
+      "kind": "table",
+      "sources": [
+        "full_experiments/results/gemini_131k_hierarchical_families/latex_dropin/music_table.tex"
+      ],
+      "notes": "Exact imported table match. The scripts/containment/fit_table_height.py postprocessor also controls table sizing.",
+      "producer": "scripts/containment/make_dropin.py"
+    },
+    {
+      "macro": "ColorExamplesPath",
+      "kind": "directory",
+      "sources": [
+        "experiments/colors/results/gemini_color_feature_examples_table"
+      ],
+      "notes": "Contains the native table, JPEG artwork and three embedded-font text PDFs; sources.json records data provenance."
+    },
+    {
+      "macro": "TabColorExamples",
+      "kind": "table",
+      "sources": [
+        "experiments/colors/results/gemini_color_feature_examples_table/table.tex"
+      ],
+      "notes": "",
+      "producer": "experiments/colors/render_color_examples_table.py"
+    },
+    {
+      "macro": "TabPlatonicExamples",
+      "kind": "table",
+      "sources": [
+        "full_experiments/plots/platonic_features_131k_pearson/appendix_examples_15/tables.tex"
+      ],
+      "notes": "Twelve 131K Gemini--Nemotron example tables, each with 15 distinct activation-bin samples per model and both activations checked on aligned corpus rows. Feature identities, full-corpus Pearson values, and sample selections are recorded with the tables. Tables are grouped two per page; source selections and cache provenance are saved alongside the tables.",
+      "producer": "scripts/build_pearson_appendix_tables.py"
+    },
+    {
+      "macro": "TabEmpiricalMolecules",
+      "kind": "table",
+      "sources": [
+        "full_experiments/plots/a_prefix_empirical_molecule_table.tex"
+      ],
+      "notes": "",
+      "producer": "scripts/hierarchy/plot_a_prefix_empirical_molecule_table.py"
+    },
+    {
+      "macro": "FigAPrefixProbeDecoderCosines",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/plots/a_prefix_probe_decoder_cosines.pdf"
+      ],
+      "producer": "scripts/hierarchy/plot_a_prefix_probe_decoder_cosines.py",
+      "notes": "Signed pairwise decoder cosine similarities for the 22 unique Gemini a-prefix probe directions at widths 32768 and 131072. Common prefix ordering and symmetric color scale [-0.4, 0.4]; self-cosines saturate at the upper endpoint. Numeric matrices and checkpoint provenance are in full_experiments/results/a_prefix_probe_decoder_cosines/."
+    },
+    {
+      "macro": "TabTransformExamples",
+      "kind": "table",
+      "sources": [
+        "full_experiments/plots/target_3290_transform_mix_selected_12.tex"
+      ],
+      "notes": "Activation and representative atom-example tables from frozen selections. The numerical decoder fit is produced separately by transform-fit.",
+      "producer": "scripts/build_target_3290_transform_mix_small_table.py"
+    },
+    {
+      "macro": "FigWidthPrevalenceMedian",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/paper/width_prevalence_median.pdf"
+      ],
+      "notes": "Independent full-source pairwise maximum matching and source-set intersection, using ascending feature IDs, sorted CSR, and SciPy 1.15.3. ",
+      "producer": "scripts/review_controls/plot_median_paper.py"
+    },
+    {
+      "macro": "FigSplitPrevalenceMedian",
+      "kind": "figure",
+      "sources": [
+        "full_experiments/results/sparsity_seed_controls/prevalence_median/paper/cross_distribution_prevalence_median.pdf"
+      ],
+      "notes": "Median-threshold minimum source-feature prevalence in both distributions versus direction matching, Gemini and Nemotron; thresholds calibrated once per source SAE on its full family corpus.",
+      "producer": "scripts/review_controls/plot_median_paper.py"
+    },
+    {
+      "macro": "TabFixedSourceSwap",
+      "kind": "table",
+      "sources": [
+        "full_experiments/results/sparsity_seed_controls/fixed_source_swap/table.tex"
+      ],
+      "notes": "Independent full-source pairwise maximum matching and source-set intersection, using ascending feature IDs, sorted CSR, and SciPy 1.15.3. ",
+      "producer": "scripts/review_controls/report_fixed_source_swap.py"
+    }
+  ]
+}

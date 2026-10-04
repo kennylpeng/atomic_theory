@@ -1,0 +1,24 @@
+{
+  "work": "../paper-run",
+  "paths": {
+    "activation_cache_dir": "",
+    "baselines_dir": "",
+    "control_models_dir": "",
+    "datasets_dir": "",
+    "gbif_metadata_dir": "",
+    "gemini_artifacts_dir": "",
+    "gemini_embeddings_dir": "",
+    "hierarchy_data_dir": "",
+    "date_reference_models_dir": "",
+    "models_dir": "",
+    "nemotron_embeddings_dir": "",
+    "parent_child_dir": "",
+    "research_data_dir": "",
+    "scratch_dir": "",
+    "synthetic_runs_dir": "",
+    "wikiart_dir": "",
+    "results_bundle": "",
+    "candidates_bundle": ""
+  },
+  "inputs": {}
+}
