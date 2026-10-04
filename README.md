@@ -6,15 +6,15 @@ The paper takes a scientific theory approach to understanding language model rep
 
 We train a large family of SAEs, of sizes ranging from 512 to 131,072, on about 90M embeddings from gemini-embedding-2 and llama-nemotron-embed-8b. Our main results are as follows:
 
-**Figure 2a — Persistence across SAE size.** Counts and proportions of directions matched in every larger SAE at cosine similarity ≥ 0.7.
+**Figure 2a — Features in smaller SAEs persist in larger SAEs.** Counts and proportions of directions matched in every larger SAE at cosine similarity ≥ 0.7. About 70% of 4K directions are recovered by size-8K, 16K, 32K, 65K, and 131K SAEs.
 
 ![Figure 2a: Persistent direction counts and proportions across SAE widths for Gemini and Nemotron.](assets/figure-2a.png)
 
-**Figure 2b — Stability across data distributions.** Proportions of matching directions between dictionaries trained on different distributions, comparing SAEs with PCA at cosine similarity ≥ 0.7 (absolute cosine for PCA).
+**Figure 2b — SAEs trained on different data learn shared features.** Proportions of matching directions between dictionaries trained on different distributions, comparing SAEs with PCA at cosine similarity ≥ 0.7 (absolute cosine for PCA). 26-59% of SAE directions are shared, compared to mostly 0% and at most 15% for PCA.
 
 ![Figure 2b: Cross-distribution matching heatmaps for SAE and PCA dictionaries in Gemini and Nemotron.](assets/figure-2b.png)
 
-**Figure 2c — Hierarchical recovery.** Mean held-out test F1 by hierarchy level and SAE width, pooling category–model pairs across Gemini and Nemotron.
+**Figure 2c — SAEs learn both coarse and granular features.** Mean held-out test F1 by hierarchy level and SAE width, pooling category–model pairs across Gemini and Nemotron. Best average recovery is highest at 65K or 131K for each hierarchy level.
 
 ![Figure 2c: Hierarchical recovery curves for Prefix, Cities, and GBIF.](assets/figure-2c.png)
 
